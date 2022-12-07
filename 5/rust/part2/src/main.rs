@@ -75,7 +75,7 @@ fn process_move(crate_state: &mut CrateState, line: &String) {
     let from = usize_from_str(captures.name("from").unwrap().as_str());
     let to = usize_from_str(captures.name("to").unwrap().as_str());
 
-    crate_state.mov_singles(count, from, to);
+    crate_state.mov(count, from, to);
 }
 
 fn process(lines: Vec<String>) -> String {

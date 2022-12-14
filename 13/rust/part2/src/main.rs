@@ -155,28 +155,34 @@ fn compare_items(left: &Vec<Item>, right: &Vec<Item>) -> Comparison {
 }
 
 fn main() {
-    let lines: Vec<Packet> = io::stdin()
+    let mut packets: Vec<Packet> = io::stdin()
         .lock()
         .lines()
         .map(|line| line.unwrap())
         .filter(|line| !line.is_empty())
         .map(parse_line)
         .collect();
-    let mut pairs: Vec<Comparison> = lines
-        .chunks(2)
-        .map(|f| {
-            let left = &f[0];
-            let right = &f[1];
-            println!("\nStarting {:?} vs {:?}", left, right);
-            compare_items(&left.items, &right.items)
-        })
-        .collect();
-    let count = pairs.iter().enumerate().fold(0, |acc, (i, b)| {
-        if *b == Comparison::LessThan {
-            acc + i + 1
+    packets.push(Packet {
+        items: vec![Item::List(vec![Item::Integer(2)])],
+    });
+    packets.push(Packet {
+        items: vec![Item::List(vec![Item::Integer(6)])],
+    });
+    packets.sort_by(|a, b| match compare_items(&a.items, &b.items) {
+        Comparison::LessThan => std::cmp::Ordering::Less,
+        Comparison::GreaterThan => std::cmp::Ordering::Greater,
+        Comparison::EqualTo => std::cmp::Ordering::Equal,
+    });
+    let score = packets.iter().enumerate().fold(1, |acc, (i, b)| {
+        let is_2 = compare_items(&b.items, &vec![Item::List(vec![Item::Integer(2)])])
+            == Comparison::EqualTo;
+        let is_6 = compare_items(&b.items, &vec![Item::List(vec![Item::Integer(6)])])
+            == Comparison::EqualTo;
+        if is_2 || is_6 {
+            acc * (i + 1)
         } else {
             acc
         }
     });
-    println!("{:?}", count);
+    println!("{:?}", score);
 }

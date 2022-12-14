@@ -126,6 +126,16 @@ fn main() {
             }
         }
     }
+    let mut neighbours: HashMap<Position, Vec<Position>> = HashMap::new();
+    for i in 0..height_markers.len() {
+        let row = &height_markers[i];
+        for j in 0..row.len() {
+            let p = Position::from(i,j).up();
+            if heights.contains_key(&p) {
+                if heights[p.] <= 
+            }
+        }
+    }
     let shortest_path = shortest_distance(
         start_position.unwrap(),
         target_position.unwrap(),

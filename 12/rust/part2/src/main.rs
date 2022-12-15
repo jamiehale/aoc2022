@@ -106,17 +106,31 @@ fn main() {
             }
         }
     }
+    let mut shortest_paths: Vec<usize> = vec![];
+    for i in 0..rows {
+        for j in 0..columns {
+            if heights[i][j] == 0 {
+                shortest_paths.push(shortest_path(
+                    Position::from(i, j),
+                    target_position.unwrap(),
+                    &neighbours,
+                ));
+            }
+        }
+    }
+    shortest_paths.sort();
+    println!("{}", shortest_paths[0]);
+}
+
+fn shortest_path(from: Position, to: Position, neighbours: &Vec<Vec<Vec<Position>>>) -> usize {
+    let rows = neighbours.len();
+    let columns = neighbours[0].len();
     let mut distances: Vec<Vec<u32>> = vec![vec![std::u32::MAX; columns]; rows];
     let mut prev: Vec<Vec<Option<Position>>> = vec![vec![None; columns]; rows];
     let mut frontier: VecDeque<Position> = VecDeque::new();
     let mut visited: HashSet<Position> = HashSet::new();
-    // for i in 0..rows {
-    //     for j in 0..columns {
-    //         frontier.push_back(Position::from(i, j));
-    //     }
-    // }
-    frontier.push_front(start_position.unwrap());
-    distances[start_position.unwrap().row][start_position.unwrap().column] = 0;
+    frontier.push_front(from);
+    distances[from.row][from.column] = 0;
     while !frontier.is_empty() {
         let u = frontier.pop_front().unwrap();
         println!("Point {:?}", u);
@@ -132,17 +146,17 @@ fn main() {
         }
         visited.insert(u);
     }
-    if prev[target_position.unwrap().row][target_position.unwrap().column].is_none() {
-        panic!("No path to target");
+    if prev[to.row][to.column].is_none() {
+        return std::usize::MAX;
     }
     let mut shortest_path: VecDeque<Position> = VecDeque::new();
-    let mut p = target_position.unwrap();
+    let mut p = to;
     loop {
         shortest_path.push_front(p);
         p = prev[p.row][p.column].unwrap();
-        if p == start_position.unwrap() {
+        if p == from {
             break;
         }
     }
-    println!("{}: {:?}", shortest_path.len(), shortest_path);
+    shortest_path.len()
 }
